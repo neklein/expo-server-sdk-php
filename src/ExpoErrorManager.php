@@ -20,14 +20,17 @@ class ExpoErrorManager
             return $this->getTextResponseError($textBody, $response->getStatusCode());
         }
 
-        if (! $this->responseHasErrors($result)) {
+        if (!$this->responseHasErrors($result)) {
             return $this->getTextResponseError($textBody, $response->getStatusCode());
         }
 
-        return $this->getErrorFromResult(
-            $result,
-            $response->getStatusCode()
-        );
+        return new ExpoException($textBody, $response->getStatusCode());
+
+        // Original way to handle exception message - but it doesn't always include all details
+        // return $this->getErrorFromResult(
+        //     $result,
+        //     $response->getStatusCode()
+        // );
     }
 
     /**
@@ -47,7 +50,7 @@ class ExpoErrorManager
      */
     public function getErrorFromResult(array $response, int $statusCode): ExpoException
     {
-        if (! $this->responseHasErrors($response)) {
+        if (!$this->responseHasErrors($response)) {
             return new ExpoException(
                 'Expected at least one error from Expo. Found none',
                 $statusCode
